@@ -7,8 +7,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
-        changeOrigin: true
+        target: 'https://pos-system-production-39fa.up.railway.app',
+        changeOrigin: true,
+        secure: true
       }
     }
   }
