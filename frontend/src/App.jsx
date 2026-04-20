@@ -11,25 +11,77 @@ import SalesPage from './pages/SalesPage'
 import InventoryPage from './pages/InventoryPage'
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, authReady } = useAuth()
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    )
+  }
+
   if (!user) return <Navigate to="/login" replace />
   if (adminOnly && !isAdmin) return <Navigate to="/" replace />
+
   return children
 }
 
 const AppRoutes = () => {
-  const { user } = useAuth()
+  const { user, authReady } = useAuth()
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    )
+  }
+
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/" replace /> : <LoginPage />}
+      />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="pos" element={<POSPage />} />
-        <Route path="products" element={<ProtectedRoute adminOnly><ProductsPage /></ProtectedRoute>} />
-        <Route path="sales" element={<ProtectedRoute adminOnly><SalesPage /></ProtectedRoute>} />
-        <Route path="inventory" element={<ProtectedRoute adminOnly><InventoryPage /></ProtectedRoute>} />
+        <Route
+          path="products"
+          element={
+            <ProtectedRoute adminOnly>
+              <ProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="sales"
+          element={
+            <ProtectedRoute adminOnly>
+              <SalesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="inventory"
+          element={
+            <ProtectedRoute adminOnly>
+              <InventoryPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
